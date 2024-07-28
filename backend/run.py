@@ -1,4 +1,12 @@
-from market import app, db
+# from market import create_app
+#
+# app = create_app()
+#
+# if __name__ == "__main__":
+#     app.run(debug=True)
+
+from market import app
+from market.extensions import db
 
 
 @app.before_first_request
@@ -8,4 +16,3 @@ def create_tables():
 
 if __name__ == "__main__":
     app.run(debug=True)
-

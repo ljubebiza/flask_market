@@ -1,6 +1,10 @@
 import React from "react";
+import { Link, useFetcher } from "react-router-dom";
 
 const Header: React.FC = () => {
+  // TODO: Logout
+  const fetcher = useFetcher();
+
   return (
     <nav className="navbar navbar-expand-md navbar-dark bg-dark">
       <a className="navbar-brand" href="#">
@@ -17,14 +21,14 @@ const Header: React.FC = () => {
       <div className="collapse navbar-collapse" id="navbarNav">
         <ul className="navbar-nav mr-auto">
           <li className="nav-item active">
-            <a className="nav-link" href="/home">
+            <Link className="nav-link" to="/home">
               Home <span className="sr-only">(current)</span>
-            </a>
+            </Link>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="/market">
+            <Link className="nav-link" to="/market">
               Market
-            </a>
+            </Link>
           </li>
         </ul>
         {/* Conditional rendering based on user authentication */}
@@ -42,22 +46,22 @@ const Header: React.FC = () => {
               <a className="nav-link">Welcome, {currentUser?.username}</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/logout">
-                Logout
-              </a>
+              <fetcher.Form method="POST" action="/logout">
+                <button className="nav-link">Logout</button>
+              </fetcher.Form>
             </li>
           </ul>
         ) : (
           <ul className="navbar-nav">
             <li className="nav-item">
-              <a className="nav-link" href="/login">
+              <Link className="nav-link" to="/login">
                 Login
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/register">
+              <Link className="nav-link" to="/register">
                 Register
-              </a>
+              </Link>
             </li>
           </ul>
         )}
@@ -69,7 +73,7 @@ const Header: React.FC = () => {
 export default Header;
 
 // Mock functions for demonstration
-const isLoggedIn = () => false; // Replace with your actual authentication check
+const isLoggedIn = () => localStorage.getItem("token"); // Replace with your actual authentication check
 const currentUser = {
   prettier_budget: "$1000",
   username: "JohnDoe",

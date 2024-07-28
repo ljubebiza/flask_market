@@ -12,7 +12,7 @@ function HomePage() {
           <p className="lead font-weight-normal">
             Start purchasing products by clicking the link below
           </p>
-          <a className="btn btn-primary" href="/market_page">
+          <a className="btn btn-primary" href="/market">
             Get Started
           </a>
         </div>

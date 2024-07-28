@@ -1,27 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
+import useModal from "../hooks/useModal";
+import { MoreInfoModal } from "./modals/infoModal/MoreInfoModal";
 
 // Define interfaces for props
-interface Item {
+export interface Item {
   id: number;
   name: string;
   barcode: string;
   price: number;
+  description?: string;
 }
 
-interface OwnedItem {
-  id: number;
-  name: string;
-  price: number;
-}
-
-// Define props interface for MarketPage component
 interface MarketPageProps {
-  items: Item[];
-  ownedItems?: OwnedItem[];
+  items?: Item[];
 }
 
 // MarketPage component
-const ItemList: React.FC<MarketPageProps> = ({ items, ownedItems }) => {
+const ItemList: React.FC<MarketPageProps> = ({ items }) => {
+  const modal = useModal();
+  const [item, setItem] = useState<Item | null>();
+
+  const handleDescription = (item: Item) => {
+    setItem(item);
+    modal.open();
+  };
   return (
     <div className="row" style={{ marginTop: 20, marginLeft: 20 }}>
       <div className="col-8">
@@ -39,67 +41,40 @@ const ItemList: React.FC<MarketPageProps> = ({ items, ownedItems }) => {
             </tr>
           </thead>
           <tbody>
-            {items.length &&
-              items.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.id}</td>
-                  <td>{item.name}</td>
-                  <td>{item.barcode}</td>
-                  <td>{item.price}$</td>
-                  <td>
-                    <button
-                      className="btn btn-outline btn-info"
-                      data-toggle="modal"
-                      data-target={`#Modal-MoreInfo-${item.id}`}
-                    >
-                      More Info
-                    </button>
-                    <button
-                      className="btn btn-outline btn-success"
-                      data-toggle="modal"
-                      data-target={`#Modal-PurchaseConfirm-${item.id}`}
-                    >
-                      Purchase this Item
-                    </button>
-                  </td>
-                </tr>
-              ))}
+            {items?.length
+              ? items.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.id}</td>
+                    <td>{item.name}</td>
+                    <td>{item.barcode}</td>
+                    <td>{item.price}$</td>
+                    <td>
+                      <button
+                        className="btn btn-outline btn-info"
+                        data-toggle="modal"
+                        onClick={() => handleDescription(item)}
+                      >
+                        More Info
+                      </button>
+                      <button
+                        className="btn btn-outline btn-success"
+                        data-toggle="modal"
+                        data-target={`#Modal-PurchaseConfirm-${item.id}`}
+                      >
+                        Purchase this Item
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              : null}
           </tbody>
         </table>
+        <MoreInfoModal
+          modal={modal}
+          title={item?.name || ""}
+          description={item?.description || ""}
+        />
       </div>
-      {ownedItems && (
-        <div className="col-4">
-          <h2>Owned Items</h2>
-          <p>Click on sell item to put an item back on the Market</p>
-          <br />
-          <div className="row">
-            {ownedItems?.length &&
-              ownedItems.map((ownedItem) => (
-                <div key={ownedItem.id} className="col-md-6">
-                  <div
-                    style={{ marginBottom: 5 }}
-                    className="card text-center bg-dark"
-                  >
-                    <div className="card-body">
-                      <h5 className="card-title">{ownedItem.name}</h5>
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger"
-                        style={{ marginBottom: 5 }}
-                        data-toggle={`#Modal-SellingConfirm-${ownedItem.id}`}
-                      >
-                        Sell this Item
-                      </button>
-                      <p className="card-text">
-                        <strong>This item costs {ownedItem.price}$</strong>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
