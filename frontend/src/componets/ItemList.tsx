@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import useModal from "../hooks/useModal";
 import { MoreInfoModal } from "./modals/infoModal/MoreInfoModal";
+import PurchaseModal from "./modals/purchaseModal/PurchaseModal";
 
 // Define interfaces for props
 export interface Item {
@@ -18,11 +19,17 @@ interface MarketPageProps {
 // MarketPage component
 const ItemList: React.FC<MarketPageProps> = ({ items }) => {
   const modal = useModal();
+  const purchaseModal = useModal();
   const [item, setItem] = useState<Item | null>();
 
   const handleDescription = (item: Item) => {
     setItem(item);
     modal.open();
+  };
+
+  const handlePurchaseModal = (item: Item) => {
+    setItem(item);
+    purchaseModal.open();
   };
   return (
     <div className="row" style={{ marginTop: 20, marginLeft: 20 }}>
@@ -60,6 +67,7 @@ const ItemList: React.FC<MarketPageProps> = ({ items }) => {
                         className="btn btn-outline btn-success"
                         data-toggle="modal"
                         data-target={`#Modal-PurchaseConfirm-${item.id}`}
+                        onClick={() => handlePurchaseModal(item)}
                       >
                         Purchase this Item
                       </button>
@@ -74,6 +82,7 @@ const ItemList: React.FC<MarketPageProps> = ({ items }) => {
           title={item?.name || ""}
           description={item?.description || ""}
         />
+        <PurchaseModal modal={purchaseModal} item={item as Item} />
       </div>
     </div>
   );

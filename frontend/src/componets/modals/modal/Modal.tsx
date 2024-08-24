@@ -1,8 +1,8 @@
 import { ReactNode, useId } from "react";
 
-export type ModalProps = {
+export interface ModalProps {
   title?: string;
-  children: ReactNode;
+  children?: ReactNode;
   confirmText?: string;
   denayText?: string;
   onConfirm?: () => void;
@@ -10,7 +10,7 @@ export type ModalProps = {
   isOpen: boolean;
   handleBackdropClick: () => void;
   close: () => void;
-};
+}
 
 const Modal = ({
   title,

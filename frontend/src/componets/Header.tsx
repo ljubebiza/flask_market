@@ -1,15 +1,16 @@
 import React from "react";
 import { Link, useFetcher } from "react-router-dom";
+import { useStore } from "../store/store";
 
 const Header: React.FC = () => {
-  // TODO: Logout
   const fetcher = useFetcher();
+  const { user, token } = useStore()[0];
 
   return (
     <nav className="navbar navbar-expand-md navbar-dark bg-dark">
-      <a className="navbar-brand" href="#">
+      <Link className="navbar-brand" to="/">
         Black Owl Market
-      </a>
+      </Link>
       <button
         className="navbar-toggler"
         type="button"
@@ -32,18 +33,18 @@ const Header: React.FC = () => {
           </li>
         </ul>
         {/* Conditional rendering based on user authentication */}
-        {isLoggedIn() ? (
+        {token ? (
           <ul className="navbar-nav">
             <li className="nav-item">
-              <a
+              <span
                 className="nav-link"
                 style={{ color: "goldenrod", fontWeight: "bold" }}
               >
-                <i className="fas fa-coins"></i> {currentUser?.prettier_budget}
-              </a>
+                <i className="fas fa-coins"></i> {user.balance}
+              </span>
             </li>
             <li className="nav-item">
-              <a className="nav-link">Welcome, {currentUser?.username}</a>
+              <span className="nav-link">Welcome, {user.username}</span>
             </li>
             <li className="nav-item">
               <fetcher.Form method="POST" action="/logout">
@@ -71,10 +72,3 @@ const Header: React.FC = () => {
 };
 
 export default Header;
-
-// Mock functions for demonstration
-const isLoggedIn = () => localStorage.getItem("token"); // Replace with your actual authentication check
-const currentUser = {
-  prettier_budget: "$1000",
-  username: "JohnDoe",
-};

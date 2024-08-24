@@ -15,7 +15,8 @@ export const getProducts = async () => {
 
   const showData = await response.json();
   const {
-    data: { items },
+    data: { items, owned_items: ownedItems },
   } = showData;
-  return items;
+
+  return { ownedItems, items };
 };

@@ -1,9 +1,11 @@
 import Modal, { ModalProps } from "../modal/Modal";
-type MoreInfoModalProps = {
+
+interface MoreInfoModalProps {
   title: string;
   description: string;
   modal: Omit<ModalProps, "children">;
-};
+}
+
 export const MoreInfoModal = ({
   title,
   description,

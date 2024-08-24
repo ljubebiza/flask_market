@@ -1,36 +1,44 @@
-interface OwnedItem {
-  id: number;
-  name: string;
-  price: number;
-}
+import { useState } from "react";
+import useModal from "../hooks/useModal";
+import { Item } from "./ItemList";
+import SellModal from "./modals/sellModal/SellModal";
 
 interface OwnedItesProps {
-  ownedItems?: OwnedItem[];
+  ownedItems: Item[];
 }
 
 const OrderedItemsList = ({ ownedItems }: OwnedItesProps) => {
+  const [item, setItem] = useState<Item>();
+
+  const modal = useModal();
   if (!ownedItems) {
     return null;
   }
+
+  const handleSellingModal = (item: Item) => {
+    setItem(item);
+    modal.open();
+  };
+
   return (
     <div className="col-4">
       <h2>Owned Items</h2>
       <p>Click on sell item to put an item back on the Market</p>
       <br />
       <div className="row">
-        {ownedItems.map((ownedItem: OwnedItem) => (
+        {ownedItems.map((ownedItem: Item) => (
           <div key={ownedItem.id} className="col-md-6">
             <div
               style={{ marginBottom: 5 }}
-              className="card text-center bg-dark"
+              className="card text-center bg-dark text-white"
             >
               <div className="card-body">
                 <h5 className="card-title">{ownedItem.name}</h5>
                 <button
                   type="button"
+                  onClick={() => handleSellingModal(ownedItem)}
                   className="btn btn-outline-danger"
                   style={{ marginBottom: 5 }}
-                  data-toggle={`#Modal-SellingConfirm-${ownedItem.id}`}
                 >
                   Sell this Item
                 </button>
@@ -42,6 +50,7 @@ const OrderedItemsList = ({ ownedItems }: OwnedItesProps) => {
           </div>
         ))}
       </div>
+      <SellModal modal={modal} item={item} />
     </div>
   );
 };

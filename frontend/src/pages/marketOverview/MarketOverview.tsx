@@ -7,10 +7,11 @@ import OrderedItemsList from "../../componets/OrderItemsList";
 
 interface LoaderData {
   items: Item[];
+  ownedItems?: Item[];
 }
 
 const MarketPage = () => {
-  const { items } = useLoaderData() as LoaderData;
+  const { items, ownedItems } = useLoaderData() as LoaderData;
 
   return (
     <Fragment>
@@ -19,15 +20,31 @@ const MarketPage = () => {
           {(items) => <ItemList items={items} />}
         </Await>
       </Suspense>
-      <OrderedItemsList />
+      <Suspense
+        fallback={
+          <p>
+            <h1>Loading...</h1>
+          </p>
+        }
+      >
+        <Await
+          resolve={ownedItems}
+          errorElement={<p>Failed to load owned items</p>}
+        >
+          {(ownedItems) => <OrderedItemsList ownedItems={ownedItems} />}
+        </Await>
+      </Suspense>
     </Fragment>
   );
 };
 
 export default MarketPage;
 
-export const loader = () => {
+export const loader = async () => {
+  const { items, ownedItems } = await getProducts();
+
   return defer({
-    items: getProducts(),
+    items,
+    ownedItems,
   });
 };

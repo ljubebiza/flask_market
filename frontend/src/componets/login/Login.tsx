@@ -12,7 +12,6 @@ const LoginPage: React.FC = () => {
 
   const isSubmitting = navigation.state === "submitting";
 
-  console.log(data);
   const handleRegisterClick = () => {
     navigate("/register");
   };

@@ -33,7 +33,9 @@ export async function autenticateUser({ request }: ActionFunctionArgs) {
     );
   }
 
-  const { token } = await response.json();
+  const { token, user } = await response.json();
+  localStorage.setItem("user", JSON.stringify(user));
   localStorage.setItem("token", token);
-  return redirect("/market");
+
+  return redirect(`/market`);
 }

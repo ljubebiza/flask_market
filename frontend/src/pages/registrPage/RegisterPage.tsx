@@ -10,7 +10,6 @@ const RegisterPage: React.FC = () => {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    // Handle form submission logic here
   };
 
   const handleSignInClick = () => {
@@ -23,7 +22,8 @@ const RegisterPage: React.FC = () => {
         <Form
           className="form-register"
           style={{ color: "white" }}
-          onSubmit={handleSubmit}
+          action="/register"
+          method="POST"
         >
           <h1 className="h3 mb-3 font-weight-normal">
             Please create your account
@@ -33,7 +33,7 @@ const RegisterPage: React.FC = () => {
             <label htmlFor="username">Username</label>
             <input
               type="text"
-              id="username"
+              name="username"
               className="form-control"
               placeholder="Username"
               value={username}
@@ -45,7 +45,7 @@ const RegisterPage: React.FC = () => {
             <label htmlFor="email">Email address</label>
             <input
               type="email"
-              id="email"
+              name="email"
               className="form-control"
               placeholder="Email address"
               value={email}
@@ -57,7 +57,7 @@ const RegisterPage: React.FC = () => {
             <label htmlFor="password1">Password</label>
             <input
               type="password"
-              id="password1"
+              name="password"
               className="form-control"
               placeholder="Password"
               value={password1}
@@ -69,7 +69,7 @@ const RegisterPage: React.FC = () => {
             <label htmlFor="password2">Confirm Password</label>
             <input
               type="password"
-              id="password2"
+              name="password2"
               className="form-control"
               placeholder="Confirm Password"
               value={password2}
