@@ -1,13 +1,6 @@
-# from typing import Any, Dict, Optional
-#
-# from flask import jsonify, request
-# from flask_restful import Resource
-# from market.models import User
-# market/api/authentication.py
 from typing import Any, Dict, Optional
 
 from flask import jsonify, request
-# from flask_login import login_user
 from flask_restful import Resource
 
 from market.api_utils.api_token_helper import login_user_jwt
@@ -38,7 +31,7 @@ class RegisterUserResource(Resource):
         if User.query.filter_by(username=username).first():
             return jsonify({"error": "Username already exists"}), 400
 
-        if User.query.filter_by(email=email).first():
+        if User.query.filter_by(email_address=email).first():
             return jsonify({"error": "Email address already exists"}), 400
 
         def create_user(username: str, email: str, password: str):
@@ -71,28 +64,43 @@ class LoginResource(Resource):
         """
         if not request.is_json:
             return (
-                jsonify({"error": "Invalid content type, must be application/json"}),
+                jsonify(
+                    {
+                        "message": "Invalid content type, must be application/json",
+                        "error": "Bad request",
+                    }
+                ),
                 400,
             )
 
-        login_data = request.get_json()
+        login_data = request.json
         if not login_data:
-            return jsonify({"error": "Request body must contain JSON data"}), 400
+            return jsonify({"message": "Request body must contain JSON data", "error": "Bad request"}), 400
 
         username = login_data.get("username")
         password = login_data.get("password")
 
         if not username or not password:
-            return jsonify({"error": "Username and password are required"}), 400
+            return (
+                jsonify(
+                    {
+                        "message": "Username and password are required",
+                        "error": "Bad request",
+                    }
+                ),
+                400,
+            )
 
         # Check if the username exists in the database
         user = User.query.filter_by(username=username).first()
         if not user or not user.check_password_correction(password):
             return (
-                jsonify({"error": "Wrong username or password"}),
+                jsonify({"message": "Wrong username or password", "error": "Unauthorized"}),
                 401,
             )
 
         token = login_user_jwt(user.id)
+        user_d = user.as_dict()
+        print(f"User: {user}")
 
-        return jsonify({"token": token}), 200
+        return jsonify({"token": token, "user": {"balance": user_d["budget"], "username": user_d["username"]}}), 200

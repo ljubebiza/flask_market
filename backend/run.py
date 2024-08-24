@@ -1,12 +1,7 @@
-# from market import create_app
-#
-# app = create_app()
-#
-# if __name__ == "__main__":
-#     app.run(debug=True)
-
-from market import app
+from market import create_app
 from market.extensions import db
+
+app = create_app()
 
 
 @app.before_first_request

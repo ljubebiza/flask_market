@@ -1,16 +1,18 @@
-[tool.black]
 # For rationale and more information, see:
 # https://recharge.atlassian.net/wiki/spaces/EN/pages/1049133115/Code+Quality
-target-version = ['py37']
-line-length = 120
+# target-version = ['py37']
 
 [tool.ruff]
 line-length = 120
+select = ["E", "F", "W", "C", "N", "B"]
 
-[tool.isort]
-profile = "black"
-atomic = true
-extra_standard_library = ["six"]
-line_length = 120
+[tool.black]
+line-length = 120
 
 
+
+# [tool.isort]
+# profile = "black"
+# atomic = true
+# extra_standard_library = ["six"]
+# line_length = 120

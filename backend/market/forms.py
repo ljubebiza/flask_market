@@ -1,7 +1,6 @@
 from flask import jsonify, request
 from flask_restful import Resource
 from flask_wtf import FlaskForm
-from werkzeug.exceptions import BadRequest
 from wtforms import PasswordField, StringField, SubmitField
 from wtforms.validators import DataRequired
 
@@ -11,6 +10,8 @@ from market.models import User
 
 class RegisterResource(Resource):
     def post(self):
+        if not request.get_json():
+            return jsonify({"error": "Invalid JSON"}), 400
         data = request.get_json()
 
         username = data.get("username")

@@ -1,7 +1,6 @@
 # routes.py
-from flask import Blueprint, g, jsonify, request, session
+from flask import Blueprint, jsonify
 
-from market.api_utils.api_token_helper import token_required
 from market.models import Item
 
 routes = Blueprint("routes", __name__)
@@ -26,13 +25,3 @@ def home_page():
         "data": {"message": "Request was successful", "items": items_data},
     }
     return jsonify(response), 200
-
-
-@routes.route("/logout", methods=["GET", "POST"])
-@token_required
-def logout():
-    session.pop("logged_in", None)
-    token = request.headers.get("Authorization").split()[1]  # Assuming 'Bearer <JWT>'
-    g.blacklisted_tokens.add(token)
-
-    return jsonify({"message": "Logged out successfully"}), 200

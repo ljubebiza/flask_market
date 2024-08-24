@@ -29,12 +29,11 @@ class User(db.Model):
     def check_password_correction(self, attempted_password):
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
 
-    def can_purchase(self, item_obj, quantity: int):
-        print(f"Price: {item_obj.price} Quantity: {quantity}")
-        return self.budget >= item_obj.price * quantity
+    def can_purchase(self, item_obj, quantity):
+        return self.user.budget >= item_obj.price * quantity
 
     def can_sell(self, item_obj, quantity):
-        return item_obj.quantity >= quantity
+        return Purchase(user_id=self.id, item_id=item_obj.id, quantity=quantity).first()
 
     def as_dict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
@@ -47,33 +46,27 @@ class Item(db.Model):
     barcode = db.Column(db.String(length=12), nullable=False, unique=True)
     description = db.Column(db.String(length=1024), nullable=False, unique=True)
     quantity = db.Column(db.Integer(), nullable=False, default=1)
+    something = db.Column(db.Integer(), nullable=True, default=3)
+    something_else = db.Column(db.Integer(), nullable=True, default=3)
 
     def __repr__(self):
         return f"Item {self.name}"
 
-    def buy(self, user, quantity):
-        # Check if the purchase already exists
-        existing_purchase = Purchase.query.filter_by(user_id=user.id, item_id=self.id).first()
-
-        print("Exist", existing_purchase)
-        if existing_purchase:
-            existing_purchase.quantity += quantity
-        else:
-            # Create a new purchase
-            new_purchase = Purchase(user_id=user.id, item_id=self.id, quantity=quantity)
-            db.session.add(new_purchase)
-
+    def buy(self, user, quantity=1):
+        purchase = Purchase(user_id=user.id, item_id=self.id, quantity=quantity)
         user.budget -= self.price * quantity
+        db.session.add(purchase)
         db.session.commit()
 
-    def sell(self, user, purchase_item, quantity):
+    def sell(self, user, quantity):
+        purchase = Purchase(user_id=user.id, item_id=self.id).first()
         user.budget += self.price * quantity
-        purchase_item.quantity = purchase_item.quantity - quantity
+        purchase.quantity = purchase.quantity - quantity
 
-        if purchase_item.quantity == 0:
-            db.session.delete(purchase_item)
+        if purchase.quantity == 0:
+            db.session.delete(purchase)
         else:
-            db.session.add(purchase_item)
+            db.session.add(purchase)
 
         db.session.commit()
 
@@ -82,13 +75,14 @@ class Item(db.Model):
             "id": self.id,
             "name": self.name,
             "price": self.price,
+            "owner": self.owner,
             "description": self.description,
             "barcode": self.barcode,
             "quantity": self.quantity,
         }
 
     def __str__(self):
-        return f"'id':{self.id}, 'name': {self.name}, 'price': {self.price}, 'description': {self.description}, 'barcode': {self.barcode}"
+        return f"'id':{self.id}, 'name': {self.name}, 'price': {self.price}, 'owner': {self.owner}, 'description': {self.description}, 'barcode': {self.barcode}"
 
 
 class Purchase(db.Model):
@@ -97,6 +91,3 @@ class Purchase(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     item_id = db.Column(db.Integer, db.ForeignKey("item.id"), nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)
-
-    def as_dict(self):
-        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
