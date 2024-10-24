@@ -58,7 +58,10 @@ const LoginPage: React.FC = () => {
               Register
             </button>
           </div>
-          <button className="btn btn-lg btn-block btn-primary">
+          <button
+            disabled={isSubmitting}
+            className="btn btn-lg btn-block btn-primary"
+          >
             {isSubmitting ? "Submitting..." : "Submit"}
           </button>
         </Form>

@@ -39,7 +39,7 @@ const Modal = ({
       onClick={handleBackdropClick}
     >
       <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-content bg-dark text-light">
+        <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">{title}</h5>
             <button

@@ -2,6 +2,7 @@ import {
   ActionFunctionArgs,
   createBrowserRouter,
   json,
+  RouterProvider,
 } from "react-router-dom";
 import RootLayout from "../componets/layout/RootLayout";
 import Login from "../componets/login/Login";
@@ -15,71 +16,42 @@ import RegisterPage from "../pages/registrPage/RegisterPage";
 import { autenticateUser } from "../api/authenticateUser";
 import { logoutUser } from "../api/logoutUser";
 import { itemActions } from "../api/itemActions";
+import { useStore } from "../store/store";
+import { registerUser } from "../api/registerUser";
 
-export const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <RootLayout />,
-    errorElement: <ErrorBoundary />,
-    children: [
-      { index: true, element: <Home /> },
-      { path: "/home", element: <Home /> },
-      { path: "/login", element: <Login />, action: autenticateUser },
-      {
-        path: "/register",
-        element: <RegisterPage />,
-        action: async ({ request }: ActionFunctionArgs) => {
-          const data = await request.formData();
-          const method = request.method;
-          const url = `${process.env.REACT_APP_BASE_API_URL}/register`;
-
-          const eventData = {
-            username: data.get("username"),
-            email: data.get("email"),
-            password: data.get("password"),
-            password_confirmation: data.get("password2"),
-          };
-          console.log(eventData);
-
-          const response = await fetch(url, {
-            method: method,
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(eventData),
-          });
-
-          if (
-            response.status === 401 ||
-            response.status === 404 ||
-            response.status === 400
-          ) {
-            return response;
-          }
-
-          if (!response.ok) {
-            throw json(
-              { message: "Could not comunicate with the server!" },
-              { status: 500 },
-            );
-          }
-
-          return response;
+const RouterWrapper = () => {
+  const dispatch = useStore()[1];
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <RootLayout />,
+      errorElement: <ErrorBoundary />,
+      children: [
+        { index: true, element: <Home /> },
+        { path: "/home", element: <Home /> },
+        { path: "/login", element: <Login />, action: autenticateUser },
+        {
+          path: "/register",
+          element: <RegisterPage />,
+          action: registerUser,
         },
-      },
-      {
-        path: "/market",
-        element: <ProtectedRoute />,
-        children: [
-          {
-            index: true,
-            element: <MarketOverview />,
-            loader: productsLoader,
-            action: itemActions,
-          },
-        ],
-      },
-      { path: "/logout", action: logoutUser }, // Add the logout route
-    ],
-  },
-]);
+        {
+          path: "/market",
+          element: <ProtectedRoute />,
+          children: [
+            {
+              index: true,
+              element: <MarketOverview />,
+              loader: productsLoader,
+              action: async ({ request }) => itemActions({ request, dispatch }),
+            },
+          ],
+        },
+        { path: "/logout", action: logoutUser }, // Add the logout route
+      ],
+    },
+  ]);
+
+  return <RouterProvider router={router} />;
+};
+export default RouterWrapper;

@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useFetcher } from "react-router-dom";
 import { useStore } from "../store/store";
 
 const Header: React.FC = () => {
   const fetcher = useFetcher();
   const { user, token } = useStore()[0];
+
+  useEffect(() => {
+    localStorage.setItem("user", JSON.stringify(user));
+  }, [user]);
 
   return (
     <nav className="navbar navbar-expand-md navbar-dark bg-dark">

@@ -1,0 +1,13 @@
+.qty-wrapper > span {
+  padding: 0 8px;
+}
+
+.qty-wrapper input {
+  padding: 6px 0;
+}
+
+.qty-wrapper input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

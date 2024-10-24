@@ -1,3 +1,4 @@
+import { ACTIONS } from "../reducers/actions";
 import {
   addToBalance,
   removeUserData,
@@ -22,10 +23,10 @@ const configureStore = () => {
   };
 
   const actions = {
-    SET_USER: setUser,
-    REMOVE_USER: removeUserData,
-    ADD_TO_BALANCE: addToBalance,
-    REMOVE_FROM_BALANCE: subtactFromBalance,
+    [ACTIONS.SET_USER]: setUser,
+    [ACTIONS.REMOVE_USER]: removeUserData,
+    [ACTIONS.ADD_TO_BALANCE]: addToBalance,
+    [ACTIONS.REMOVE_FROM_BALANCE]: subtactFromBalance,
   };
 
   initStore(actions, initialState);
