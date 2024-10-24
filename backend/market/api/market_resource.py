@@ -1,3 +1,6 @@
+import copy
+from os import walk
+
 from flask import jsonify, request
 from flask_restful import Resource
 
@@ -18,7 +21,8 @@ class MarketResource(Resource):
             .all()
         )
 
-        items_data = [item.to_dict() for item in items]  # Assuming you have a to_dict method in your Item model
+        # Assuming you have a to_dict method in your Item model
+        items_data = [item.to_dict() for item in items]
 
         owned_items_data = []
 
@@ -66,11 +70,25 @@ class MarketResource(Resource):
         if item_object and quantity:
             if current_user_data.can_purchase(item_object, quantity):
                 print("Purchased")
-                item_object.buy(current_user_data, quantity)
+                # Check if the purchase already exists
+                existing_purchase = Purchase.query.filter_by(
+                    user_id=current_user_data.id, item_id=item_object.id
+                ).first()
+                updated_quantity = getattr(existing_purchase, "quantity", 0) + quantity
+
+                item_object.buy(current_user_data, existing_purchase, quantity)
+                updated_item = {
+                    "id": item_object.id,
+                    "name": item_object.name,
+                    "price": item_object.price,
+                    "barcode": item_object.barcode,
+                    "description": item_object.description,
+                    "quantity": updated_quantity,
+                }
                 return (
                     jsonify(
                         {
-                            "message": f"Congratulations! You have purchased {item_object.name} for {item_object.price}$",
+                            "item": updated_item,
                             "status": "success",
                         }
                     ),
@@ -118,11 +136,23 @@ class SellItemResource(Resource):
         # selling item logic
         if purchased_item and item_object:
             if current_user_data.can_sell(purchased_item, quantity):
+
+                updated_quantity = purchased_item.quantity - quantity
+
                 item_object.sell(current_user_data, purchased_item, quantity)
+                updated_item = {
+                    "id": item_object.id,
+                    "name": item_object.name,
+                    "price": item_object.price,
+                    "barcode": item_object.barcode,
+                    "description": item_object.description,
+                    "quantity": updated_quantity,
+                }
+
                 return (
                     jsonify(
                         {
-                            "message": f"Congratulations! You have sold {item_object.name} back to Market!",
+                            "item": updated_item,
                             "status": "success",
                         }
                     ),

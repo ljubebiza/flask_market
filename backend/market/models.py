@@ -15,8 +15,7 @@ class User(db.Model):
     def prettier_budget(self):
         if len(str(self.budget)) >= 4:
             return f"{str(self.budget)[:-3]},{str(self.budget)[-3:]}$"
-        else:
-            return f"{self.budget}$"
+        return f"{self.budget}$"
 
     @property
     def password(self):
@@ -51,11 +50,8 @@ class Item(db.Model):
     def __repr__(self):
         return f"Item {self.name}"
 
-    def buy(self, user, quantity):
-        # Check if the purchase already exists
-        existing_purchase = Purchase.query.filter_by(user_id=user.id, item_id=self.id).first()
+    def buy(self, user, existing_purchase, quantity):
 
-        print("Exist", existing_purchase)
         if existing_purchase:
             existing_purchase.quantity += quantity
         else:
@@ -88,7 +84,7 @@ class Item(db.Model):
         }
 
     def __str__(self):
-        return f"'id':{self.id}, 'name': {self.name}, 'price': {self.price}, 'description': {self.description}, 'barcode': {self.barcode}"
+        return f"'id':{self.id}, 'name': {self.name}, 'price': {self.price}, 'description': {self.description}, 'barcode': {self.barcode}, 'quantity': {self.quantity}"
 
 
 class Purchase(db.Model):

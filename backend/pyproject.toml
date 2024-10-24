@@ -16,3 +16,28 @@ line-length = 120
 # atomic = true
 # extra_standard_library = ["six"]
 # line_length = 120
+
+[tool.pyright]
+include = ["market"]  # Your Python code is in the 'market' directory
+exclude = [
+    "**/node_modules",
+    "**/__pycache__",
+    "migrations",     # Exclude migrations if not needed
+    "venv",           # Exclude virtual environment
+    ".idea"           # Exclude IDE files
+]
+ignore = []
+defineConstant = { DEBUG = true }
+
+# Path to the virtual environment
+venvPath = "./venv/"
+
+executionEnvironments = [
+  { root = "market", pythonVersion = "3.9", extraPaths = [
+    "backend/venv/lib/python3.9/site-packages",
+    "backend/venv/bin"
+  ]},
+  { root = "scripts", pythonVersion = "3.9" },  # Assuming 'scripts' is part of your project
+  { root = "migrations", pythonVersion = "3.9" }  # If you want to include migrations for type-checking
+]
+
